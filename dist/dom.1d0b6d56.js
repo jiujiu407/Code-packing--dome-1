@@ -118,11 +118,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"dom.js":[function(require,module,exports) {
-var _window$dom;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-window.dom = (_window$dom = {
+window.dom = {
   create: function create(string) {
     var container = document.createElement("template"); // trim()去除字符串的头尾空格
 
@@ -133,129 +129,149 @@ window.dom = (_window$dom = {
     node.parentNode.insertBefore(node2, node.nextSibling);
   },
   before: function before(node, node2) {
-    node.parentNode.insertBefore(node, node2);
+    node.parentNode.insertBefore(node2, node);
   },
   append: function append(parent, node) {
     parent.appendChild(node);
   },
+  //新增一个父级元素
   wrap: function wrap(node, parent) {
-    dom.before(node, parent);
-  }
-}, _defineProperty(_window$dom, "wrap", function wrap(node, parent) {
-  dom.before(node, parent);
-  dom.append(parent, node);
-}), _defineProperty(_window$dom, "remove", function remove(node) {
-  node.parentNode.removeChild(node);
-  return node;
-}), _defineProperty(_window$dom, "empty", function empty(node) {
-  var array = [];
-  var x = node.firstChild;
+    dom.before(node, parent); // 如果你将append插入到别的地方，它就会在之前的位置上移开
 
-  while (x) {
-    array.push(dom.remove(node.firstChild));
-    x = node.firstChild;
-  }
+    dom.append(parent, node);
+  },
+  remove: function remove(node) {
+    node.parentNode.removeChild(node);
+    return node;
+  },
+  empty: function empty(node) {
+    var array = [];
+    var x = node.firstChild;
 
-  return array;
-}), _defineProperty(_window$dom, "attr", function attr(node, name, value) {
-  // 重载：根据参数个数写不同的代码；既可以读又可以写
-  if (arguments.length === 3) {
-    node.setAttribute(name, value);
-  } else if (arguments.length === 2) {
-    return node.getAttribute(name);
-  }
-}), _defineProperty(_window$dom, "text", function text(node, string) {
-  // 适配
-  if (arguments.length === 2) {
-    if ('innerText' in node) {
-      node.innerText = string;
-    } else {
-      node.textContent = string;
+    while (x) {
+      array.push(dom.remove(node.firstChild));
+      x = node.firstChild;
     }
-  } else if (arguments.length === 1) {
-    if ('innerText' in node) {
-      return node.innerText;
-    } else {
-      return node.textContent;
-    }
-  }
-}), _defineProperty(_window$dom, "html", function html(node, string) {
-  if (arguments.length === 2) {
-    node.innerHTML = string;
-  } else if (arguments.length === 1) {
-    return node.innerHTML;
-  }
-}), _defineProperty(_window$dom, "style", function style(node, name, value) {
-  if (arguments.length === 3) {
-    node.style[name] = value;
-  } else if (arguments.length === 2) {
-    if (typeof name === 'string') {
-      return node.style[name];
-    } else if (name instanceof Object) {
-      var object = name;
 
-      for (var key in object) {
-        node.style[key] = object[key];
+    return array;
+  },
+  attr: function attr(node, name, value) {
+    // 重载：根据参数个数写不同的代码；既可以读又可以写
+    if (arguments.length === 3) {
+      node.setAttribute(name, value);
+    } else if (arguments.length === 2) {
+      return node.getAttribute(name);
+    }
+  },
+  text: function text(node, string) {
+    // 适配
+    if (arguments.length === 2) {
+      if ('innerText' in node) {
+        node.innerText = string;
+      } else {
+        node.textContent = string;
+      }
+    } else if (arguments.length === 1) {
+      if ('innerText' in node) {
+        return node.innerText;
+      } else {
+        return node.textContent;
       }
     }
-  }
-}), _defineProperty(_window$dom, "class", {
-  add: function add(node, className) {
-    node.classList.add(className);
   },
-  remove: function remove(node, className) {
-    node.classList.remove(className);
-  },
-  has: function has(node, className) {
-    return node.classList.contains(className);
-  }
-}), _defineProperty(_window$dom, "on", function on(node, eventName, fn) {
-  node.addEventListener(eventName, fn);
-}), _defineProperty(_window$dom, "off", function off(node, eventName, fn) {
-  node.removeEventListener(eventName, fn);
-}), _defineProperty(_window$dom, "find", function find(selector, scope) {
-  return (scope || document).querySelectorAll(selector);
-}), _defineProperty(_window$dom, "parent", function parent(node) {
-  return node.parentNode;
-}), _defineProperty(_window$dom, "children", function children(node) {
-  return node.children;
-}), _defineProperty(_window$dom, "siblings", function siblings(node) {
-  //  Array.from()将伪数组转换为数组
-  return Array.from(node.parentNode.children).filter(function (n) {
-    return n !== node;
-  });
-}), _defineProperty(_window$dom, "next", function next(node) {
-  var x = node.nextSibling;
-
-  while (x && x.nodeType === 3) {
-    x = x.nextSibling;
-  }
-
-  return x;
-}), _defineProperty(_window$dom, "previous", function previous(node) {
-  var x = node.previousSibling;
-
-  while (x && x.nodeType === 3) {
-    x = x.previousSibling;
-  }
-
-  return x;
-}), _defineProperty(_window$dom, "each", function each(nodeList, fn) {
-  for (var i = 0; i < nodeList.length; i++) {
-    fn.call(null, nodeList[i]);
-  }
-}), _defineProperty(_window$dom, "index", function index(node) {
-  var list = dom.children(node.parentNode);
-  var i;
-
-  for (i = 0; i < list.length; i++) {
-    if (list[i] === node) {
-      break;
+  html: function html(node, string) {
+    if (arguments.length === 2) {
+      node.innerHTML = string;
+    } else if (arguments.length === 1) {
+      return node.innerHTML;
     }
-  }
+  },
+  style: function style(node, name, value) {
+    if (arguments.length === 3) {
+      node.style[name] = value;
+    } else if (arguments.length === 2) {
+      if (typeof name === 'string') {
+        return node.style[name];
+      } else if (name instanceof Object) {
+        var object = name;
 
-  return i;
-}), _window$dom);
+        for (var key in object) {
+          node.style[key] = object[key];
+        }
+      }
+    }
+  },
+  class: {
+    add: function add(node, className) {
+      node.classList.add(className);
+    },
+    remove: function remove(node, className) {
+      node.classList.remove(className);
+    },
+    has: function has(node, className) {
+      return node.classList.contains(className);
+    }
+  },
+  on: function on(node, eventName, fn) {
+    node.addEventListener(eventName, fn);
+  },
+  off: function off(node, eventName, fn) {
+    node.removeEventListener(eventName, fn);
+  },
+  // 用于获取标签或标签们，scope范围
+  find: function find(selector, scope) {
+    return (scope || document).querySelectorAll(selector);
+  },
+  parent: function parent(node) {
+    return node.parentNode;
+  },
+  children: function children(node) {
+    return node.children;
+  },
+  siblings: function siblings(node) {
+    //  Array.from()将伪数组转换为数组
+    return Array.from(node.parentNode.children).filter(function (n) {
+      return n !== node;
+    });
+  },
+  next: function next(node) {
+    var x = node.nextSibling;
+
+    while (x && x.nodeType === 3) {
+      x = x.nextSibling;
+    }
+
+    return x;
+  },
+  previous: function previous(node) {
+    var x = node.previousSibling;
+
+    while (x && x.nodeType === 3) {
+      x = x.previousSibling;
+    }
+
+    return x;
+  },
+  //  用于遍历所有节点，nodeList节点列表，fn用函数调用节点列表
+  each: function each(nodeList, fn) {
+    for (var i = 0; i < nodeList.length; i++) {
+      //  call第一个参数是this
+      fn.call(null, nodeList[i]);
+    }
+  },
+  index: function index(node) {
+    var list = dom.children(node.parentNode);
+    var i;
+
+    for (i = 0; i < list.length; i++) {
+      if (list[i] === node) {
+        break;
+      }
+    }
+
+    return i;
+  }
+};
 },{}],"../../../../../../Program Files/nodejs/node_global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -284,7 +300,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58284" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59970" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

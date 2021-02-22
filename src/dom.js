@@ -9,16 +9,15 @@ window.dom = {
         node.parentNode.insertBefore(node2,node.nextSibling);
     },
     before(node,node2){
-        node.parentNode.insertBefore(node,node2);
+        node.parentNode.insertBefore(node2,node);
     },
     append(parent,node){
         parent.appendChild(node);
     },
+    //新增一个父级元素
     wrap(node,parent){
         dom.before(node,parent);
-    },
-    wrap(node,parent){
-        dom.before(node,parent);
+        // 如果你将append插入到别的地方，它就会在之前的位置上移开
         dom.append(parent,node);
     },
     remove(node){
@@ -96,6 +95,7 @@ window.dom = {
        off(node,eventName,fn){
            node.removeEventListener(eventName,fn)
        },
+    // 用于获取标签或标签们，scope范围
      find(selector, scope){
          return (scope||document).querySelectorAll(selector)
      },
@@ -123,9 +123,10 @@ window.dom = {
         }
         return x
      } ,
-    //  用于遍历所有节点
+    //  用于遍历所有节点，nodeList节点列表，fn用函数调用节点列表
      each(nodeList,fn){
          for(let i=0;i<nodeList.length;i++){
+            //  call第一个参数是this
              fn.call(null, nodeList[i])
          }
      },
